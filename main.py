@@ -1,12 +1,7 @@
-from fastapi import FastAPI
+import uvicorn
+from app.app import app
 
-app = FastAPI()
 
-
-@app.get('/')
-def get_api():
-    return 'Hola mundo'
-
-@app.get('/api')
-def get_api_hola():
-    return 'Hola mundo FastAPI'
+    #Run the app 
+if __name__ == '__main__':
+    uvicorn.run(app)
