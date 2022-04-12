@@ -1,8 +1,15 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import  Column,Integer, String
 
-from database.config import Base
+from database.config import Base, SessionLocal, engine
 
+Base.metadata.create_all(engine)
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally: 
+        db.close()
 
 class User(Base):
     __tablename__ =  "user"
