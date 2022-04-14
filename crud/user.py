@@ -1,11 +1,13 @@
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 # own library
-from middleware.jwtsecurity import create_token
+from middleware.jwtsecurity import create_token, verify_jwt
 import model.user as Model
+from schemal.roles import UserRoles
 import schemal.user as Schemal
 from middleware.password import hashed_password, verify_password
+
 
 
 def login(db : Session,email : str , password : str):
@@ -18,13 +20,13 @@ def login(db : Session,email : str , password : str):
     if verify_password(password, user.password) is False:
         raise HTTPException(status_code= 404, detail= 'password es incorrecto')    
     
-    jwt = create_token({'username': user.username, 'email' : user.email} )
-    
+    jwt = create_token({'username': user.username, 'email' : user.email})
+
     to_encode = user.__dict__
     
     del to_encode['_sa_instance_state']
     
-    print(to_encode.update({'token' : jwt}))
+    to_encode.update({'token' : jwt})
     
     return to_encode
 
@@ -37,11 +39,10 @@ def get_user_by_email(  email : str, db = Session):
 def create_user(user : Schemal.UserRegister , db = Session):
     
     try:
-        
         if get_user_by_email( email=user.email, db= db):
             raise HTTPException(status_code= 404, detail= 'email already register')
         
-        db_user = Model.User( email = user.email, username = user.username, phone = user.phone, password =hashed_password(user.password) )
+        db_user = Model.User( perfil = user.perfil , activate_user = True,  email = user.email, username = user.username, phone = user.phone, password = hashed_password(user.password) )
         db.add(db_user)
         db.commit()
         db.refresh(db_user)

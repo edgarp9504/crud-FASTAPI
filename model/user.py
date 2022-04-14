@@ -1,6 +1,7 @@
-from sqlalchemy import  Column,Integer, String
+from sqlalchemy import  Column,Integer, String, Enum, Boolean
 
 from database.config import Base, SessionLocal, engine
+from schemal.roles import UserRoles
 
 Base.metadata.create_all(engine)
 
@@ -19,3 +20,7 @@ class User(Base):
     email = Column(String, index = True)
     phone = Column(Integer, index = True)
     password = Column(String, index = True)
+    user_role = Column(Enum(UserRoles),server_default = UserRoles.user.name, index = True)
+    activate_user = Column(Boolean, index = True)
+    
+
